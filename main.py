@@ -18,7 +18,7 @@ total_req_sent_list = []
 total_req_existed_list = []
 total_req_excluded_list = []
 
-api = Linkedin(credentials.emailID_Chaitanya, credentials.password_Chaitanya)
+api = Linkedin(credentials.emailID, credentials.password)
 
 
 def start_point_():
@@ -83,7 +83,7 @@ def progress_status(urn_ids):
     for i in progress_bar_all:
         progress_bar_all.set_postfix({'Processing': i})  # host-LinkedIn user
         for urn_id in urn_ids:
-            sleep(int(uniform(2, 10)))  # hibernating to avoid any action by LinkedIN
+            sleep(int(uniform(15, 30)))  # hibernating to avoid any action by LinkedIN
 
             try:
                 if api.add_connection(urn_id):
