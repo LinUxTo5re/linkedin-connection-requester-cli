@@ -1,0 +1,7 @@
+# useful functions out of linkedin-api library
+
+1) unfollow_entity(self, urn_id) ---> unfollow entities
+2) get_profile_network_info(self, public_profile_id) ----> network info of specific user
+3) reply_invitation(self, invitation_entity_urn, invitation_shared_secret, action="accept") ---> accept or reject connection_request
+4) add_connection(self, profile_public_id, message="", profile_urn=None) ---> add urn as connection
+5) get_user_profile(self, use_cache=True) ---> profile of current logged user (me)
