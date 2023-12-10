@@ -1,12 +1,12 @@
-import requests
 import json
 import credentials
 from tqdm import tqdm
-import csv
 import os
 import glob
 from linkedin_api import Linkedin
 import handleids
+from time import sleep
+from random import uniform
 
 # count
 total_req_sent = 0
@@ -27,9 +27,10 @@ def start_point_():
         keywords = input("Search Keywords: ")
         name_of_file = keywords.replace(' ', '_').lower()
         keyword_searched = api.search_people(keywords=keywords)
-        handleids.write_json_file(keyword_searched)
-        urn_ids = [urn_id['urn_id'] for urn_id in keyword_searched]
-        handling_connection(urn_ids)
+        if len(keyword_searched) != 0:
+            handleids.write_json_file(name_of_file, keyword_searched)
+            urn_ids = [urn_id['urn_id'] for urn_id in keyword_searched]
+            handling_connection(urn_ids)
     else:
         current_directory = os.getcwd()
         json_pattern = '*.json'
@@ -44,13 +45,20 @@ def start_point_():
 
 def handling_connection(urn_ids):
     global total_req_excluded_list, total_req_existed_list
+    total_req_existed_list = []
+    total_req_excluded_list = []
     # load csv files
     total_req_existed_list = handleids.read_csv_file('existing_connection.csv')
     total_req_excluded_list = handleids.read_csv_file('excluded_connection.csv')
 
-    total_req_existed_list, urn_ids = handleids.handle_existing_connection(total_req_existed_list, urn_ids)
-    urn_ids.extend(total_req_excluded_list)
-    total_req_excluded_list.clear()
+    if len(urn_ids) == 0:
+        print("NO DATA")
+        return 0
+    if total_req_existed_list is not None:
+        total_req_existed_list, urn_ids = handleids.handle_existing_connection(total_req_existed_list, urn_ids)
+    if total_req_excluded_list is not None:
+        urn_ids.extend(total_req_excluded_list)
+        total_req_excluded_list.clear()
 
     progress_status(urn_ids)
     # write data to csv files
@@ -59,24 +67,35 @@ def handling_connection(urn_ids):
 
 
 def progress_status(urn_ids):
-    global total_req_excluded_list, total_req_existed_list, total_req_existed_list, total_req_existed, total_req_sent, total_req_excluded
+    global total_req_excluded_list, total_req_existed_list, total_req_sent_list, total_req_existed, total_req_sent, total_req_excluded
+    # total_req_existed_list = total_req_excluded_list = total_req_sent_list = []
+    total_req_sent = total_req_existed = total_req_excluded = 0
+    if total_req_existed_list is None:
+        total_req_existed_list = []
+
+    if total_req_excluded_list is None:
+        total_req_excluded_list = []
+
+    if total_req_sent_list is None:
+        total_req_sent_list = []
+
     progress_bar_all = tqdm(urn_ids, desc='Processing URN IDs', total=len(urn_ids), colour='red')
     for i in progress_bar_all:
         progress_bar_all.set_postfix({'Processing': i})  # host-LinkedIn user
         for urn_id in urn_ids:
+            sleep(int(uniform(2, 10)))  # hibernating to avoid any action by LinkedIN
+
             try:
                 if api.add_connection(urn_id):
-                    print("Already Connected with host")
-                    total_req_existed_list.append(urn_id)
+                    total_req_existed_list.append(urn_id)  # Existing connection
                     total_req_existed += 1
                 else:
-                    print("successfully connected")
-                    total_req_sent_list.append(urn_id)
+                    total_req_sent_list.append(urn_id)  # new connection
                     total_req_sent += 1
 
             except Exception as ex:
                 print("Skipped...")
-                total_req_excluded_list.append(urn_id)
+                total_req_excluded_list.append(urn_id)  # exception for current connection
                 total_req_excluded += 1
         progress_bar_all.close()
 
