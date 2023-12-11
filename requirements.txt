@@ -1,3 +1,2 @@
 linkedin_api
-json
 tqdm
