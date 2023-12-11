@@ -30,8 +30,8 @@ This Command Line Interface (CLI) application allows users to efficiently send c
     ```
 
 3. Configure LinkedIn Credentials:
-    - Create [credentials.py] file in cwd.
-    - add your LinkedIN mail and password to following variable in [credentials.py] :
+    - Create credentials.py file in cwd.
+    - add your LinkedIN mail and password to following variable in credentials.py :
     
         ```env
         emailID = 'YOUR_LINKEDIN_MAIL'
