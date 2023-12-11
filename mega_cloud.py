@@ -1,24 +1,17 @@
 import os
 
-from mega import Mega
-from credentials import emailID_mega, password_mega
 
-mega = Mega()
-usr = mega.login(emailID_mega, password_mega)
-
-root_nodes = usr.get_files()
-
-
-def create_folders(new_folder_name):
+def create_folders(new_folder_name, usr):
+    root_nodes = usr.get_files()
     folder_exists = any(node['type'] == 'folder' and node['name'] == new_folder_name for node in root_nodes.values())
 
     if not folder_exists:
         usr.create_folder(new_folder_name)
 
 
-def upload_file(folder_name):
+def upload_file(folder_name, usr):
     mega_folder = usr.find(folder_name, exclude_deleted=True)
-    create_folders(folder_name)  # create folder if it doesn't exist
+    create_folders(folder_name, usr)  # create folder if it doesn't exist
     if mega_folder:
         mega_folder_id = mega_folder[0]
 
@@ -40,8 +33,8 @@ def upload_file(folder_name):
                     usr.upload(file_path, mega_folder_id)
 
 
-def download_file(folder_name):
-    create_folders(folder_name)  # create folder if it doesn't exist
+def download_file(folder_name, usr):
+    create_folders(folder_name, usr)  # create folder if it doesn't exist
     extension = '.json' if folder_name == 'JSON_files' else '.csv'
     folder_node = usr.find(folder_name, exclude_deleted=True)
     if folder_node:
@@ -54,4 +47,3 @@ def download_file(folder_name):
             if file_name.lower().endswith(extension):
                 file_id = file_info['h']
                 usr.download_from_node(file_id, os.path.join(folder_name, file_name))
-

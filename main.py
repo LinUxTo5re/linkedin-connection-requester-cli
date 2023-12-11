@@ -8,6 +8,7 @@ import handleids
 from time import sleep
 from random import uniform
 import mega_cloud
+from mega import Mega
 
 # count
 total_req_sent = 0
@@ -19,7 +20,10 @@ total_req_sent_list = []
 total_req_existed_list = []
 total_req_excluded_list = []
 
+# mega and LinkedIn instances
 api = Linkedin(credentials.emailID_ln, credentials.password_ln)
+mega = Mega()
+usr = mega.login(credentials.emailID_mega, credentials.password_mega)
 
 
 def start_point_():
@@ -120,13 +124,13 @@ def init():
                 except Exception as e:
                     pass
             else:
-                mega_cloud.download_file(folder_name)
+                mega_cloud.download_file(folder_name, usr)
 
 
 # upload files to mega
 def catchup():
     for folder_name in ['JSON_files', 'CSV_files']:
-        mega_cloud.upload_file(folder_name)
+        mega_cloud.upload_file(folder_name, usr)
 
 
 if __name__ == "__main__":
