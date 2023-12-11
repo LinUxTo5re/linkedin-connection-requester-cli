@@ -7,6 +7,7 @@ from linkedin_api import Linkedin
 import handleids
 from time import sleep
 from random import uniform
+import mega_cloud
 
 # count
 total_req_sent = 0
@@ -18,7 +19,7 @@ total_req_sent_list = []
 total_req_existed_list = []
 total_req_excluded_list = []
 
-api = Linkedin(credentials.emailID, credentials.password)
+api = Linkedin(credentials.emailID_ln, credentials.password_ln)
 
 
 def start_point_():
@@ -105,5 +106,30 @@ def progress_status(urn_ids):
           f'\n total_req_excluded: {total_req_excluded}')
 
 
+# download files from mega
+def init():
+    for folder_name in ['JSON_files', 'CSV_files']:
+        folder_path = os.path.join(os.getcwd(), folder_name)
+        if os.path.exists(folder_path) and os.path.isdir(folder_path):
+            files_in_folder = os.listdir(folder_path)
+            for file_name in files_in_folder:
+                file_path = os.path.join(folder_path, file_name)
+                try:
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                except Exception as e:
+                    pass
+            else:
+                mega_cloud.download_file(folder_name)
+
+
+# upload files to mega
+def catchup():
+    for folder_name in ['JSON_files', 'CSV_files']:
+        mega_cloud.upload_file(folder_name)
+
+
 if __name__ == "__main__":
-    start_point_()
+    init()  # download files from mega
+    start_point_()  # perform linkedin operations
+    catchup()  # upload files to mega

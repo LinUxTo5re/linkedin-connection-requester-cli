@@ -1,2 +1,4 @@
 linkedin_api
-tqdm
+tqdm~=4.64.1
+
+mega~=0.2.11
