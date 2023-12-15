@@ -1,9 +1,9 @@
-import csv
 import os
 import json
 from datetime import datetime
 
 
+# exclude common urn ids
 def handle_existing_connection(total_req_existed_list, urn_ids):
     common_users = set(total_req_existed_list).intersection(urn_ids)
     for user in common_users:
@@ -11,31 +11,11 @@ def handle_existing_connection(total_req_existed_list, urn_ids):
     return total_req_existed_list.extend(common_users), urn_ids
 
 
-def read_csv_file(filename):
-    output_directory = os.path.join(os.getcwd(), 'CSV_files')
-    file_path = os.path.join(output_directory, filename)
-    if os.path.exists(file_path):
-        data = []
-        with open(file_path, 'r', newline='') as csvfile:
-            csv_reader = csv.reader(csvfile)
-            for row in csv_reader:
-                data.append(row)
-        return data
-
-
-def write_list_to_file(lst, filename):
-    output_directory = os.path.join(os.getcwd(), 'CSV_files')
-    file_path = os.path.join(output_directory, filename)
-    if lst is not None:
-        with open(file_path, 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(lst)
-
-
-def write_json_file(filename, keyword_searched):
+# write json file on local disk
+def write_file(filename, keyword_searched, is_ToCheck=False):
     output_directory = os.path.join(os.getcwd(), 'JSON_files')
     file_path = os.path.join(output_directory, filename)
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and not is_ToCheck:
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         file_name, file_extension = os.path.splitext(filename)
         file_name = f"{file_name}_{timestamp}{file_extension}"
@@ -44,5 +24,5 @@ def write_json_file(filename, keyword_searched):
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
-    with open(file_path, 'w') as file:
+    with open(file_path, 'a') as file:
         json.dump(keyword_searched, file, indent=2)
