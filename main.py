@@ -91,25 +91,26 @@ def progress_status(urn_ids):
         total_req_sent_list = []
 
     progress_bar_all = tqdm(urn_ids, desc='Processing URN IDs', total=len(urn_ids), colour='red')
-    for i in progress_bar_all:
-        progress_bar_all.set_postfix({'Processing': i})  # host-LinkedIn user
-        for urn_id in urn_ids:
-            sleep(int(uniform(15, 30)))  # hibernating to avoid any action by LinkedIN
-            try:
-                if api.add_connection(urn_id):
-                    total_req_existed_list.append(urn_id)  # Existing connection
-                    total_req_existed += 1
-                else:
-                    total_req_sent_list.append(urn_id)  # new connection
-                    total_req_sent += 1
 
-            except Exception as ex:
-                print("Skipped...", ex)
-                total_req_excluded_list.append(urn_id)  # exception for current connection
-                total_req_excluded += 1
-        progress_bar_all.close()
+    for urn_id in progress_bar_all:
+        sleep(int(uniform(15, 30)))  # hibernating to avoid any action by LinkedIn
+        try:
+            if api.add_connection(urn_id):
+                total_req_existed_list.append(urn_id)  # Existing connection
+                total_req_existed += 1
+            else:
+                total_req_sent_list.append(urn_id)  # New connection
+                total_req_sent += 1
+        except Exception as ex:
+            print("Skipped...", ex)
+            total_req_excluded_list.append(urn_id)  # Exception for current connection
+            total_req_excluded += 1
 
-        total_req_existed_list = total_req_existed_list + total_req_sent_list
+        progress_bar_all.set_postfix({'Processing': urn_id})  # Update progress bar
+
+    progress_bar_all.close()
+
+    total_req_existed_list = total_req_existed_list + total_req_sent_list
 
     print(f'\n total_req_send: {total_req_sent} \n total_req_existed: {total_req_existed} '
           f'\n total_req_excluded: {total_req_excluded}')
@@ -124,6 +125,7 @@ def init():
         os.makedirs(folder_path)
     if os.path.exists(folder_path) and os.path.isdir(folder_path):
         files_in_folder = os.listdir(folder_path)
+        print("Cleaning of local files has been initiated......")
         for file_name in files_in_folder:  # delete existing files from json_files
             file_path = os.path.join(folder_path, file_name)
             try:
@@ -134,6 +136,7 @@ def init():
         else:
             details = pantry_cloud.get_account_details(pantry_id=credentials.pantry_id)
             baskets = details['baskets']
+            print("download from pantry cloud has been initiated.....")
             for basket in baskets:
                 json_data = pantry_cloud.create_replace_basket(credentials.pantry_id, basket_name=basket['name'],
                                                                is_download=True)
@@ -141,6 +144,7 @@ def init():
                 with open(os.path.join(folder_path, f'{json_name}.json'), 'w') as file:  # adding new files to
                     # json_files from pantry cloud
                     json.dump(json_data.json(), file, indent=2)
+    print("initialization completed....")
 
 
 # upload files to pantry_cloud
@@ -149,6 +153,7 @@ def catchup():
     folder_path = os.path.join(os.getcwd(), folder_name)
     if os.path.exists(folder_path) and os.path.isdir(folder_path):
         files_in_folder = os.listdir(folder_path)
+    print("uploading from local to pantry cloud has been started")
     for file_name in files_in_folder:  # list of files in json_files
         file_path = os.path.join(folder_path, file_name)
         if os.path.exists(file_path) and os.path.isfile(file_path):
@@ -157,6 +162,7 @@ def catchup():
             # uploading all files to pantry cloud
             pantry_cloud.create_replace_basket(pantry_id=credentials.pantry_id, basket_name=file_name,
                                                json_data=json_data)
+    print("catchup completed.....")
 
 
 if __name__ == "__main__":
