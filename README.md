@@ -4,6 +4,9 @@
 
 This Command Line Interface (CLI) application allows users to efficiently send connection requests on LinkedIn using the LinkedIn API. Users can search for specific keywords and send connection requests to profiles related to those keywords. Additionally, it offers functionality to send connection requests to default profiles such as HR, talent acquisition teams, etc.
 
+## Warning
+Use this code at your own risk. You may face restrictions from LinkedIn. I'll not be responsible for any action.
+
 ## Features
 
 - **Search and Connect:** Users can search for keywords and send connection requests to profiles related to those keywords.
@@ -37,6 +40,12 @@ This Command Line Interface (CLI) application allows users to efficiently send c
         emailID = 'YOUR_LINKEDIN_MAIL'
         password = 'YOUR_LINKEDIN_PASSWORD'
         ```
+    - Create an account on pantry cloud: https://getpantry.cloud/# and add pantry ID to credentials.py :
+       
+        ```env
+        pantry_id = 'YOUR_PANTRY_ID'
+        ```
+
 
 ### Run the CLI application:
 
