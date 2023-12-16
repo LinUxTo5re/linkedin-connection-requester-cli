@@ -93,6 +93,7 @@ def progress_status(urn_ids):
     progress_bar_all = tqdm(urn_ids, desc='Processing URN IDs', total=len(urn_ids), colour='red')
 
     for urn_id in progress_bar_all:
+        progress_bar_all.set_postfix({'Processing': urn_id})  # Update progress bar
         sleep(int(uniform(15, 30)))  # hibernating to avoid any action by LinkedIn
         try:
             if api.add_connection(urn_id):
@@ -105,8 +106,6 @@ def progress_status(urn_ids):
             print("Skipped...", ex)
             total_req_excluded_list.append(urn_id)  # Exception for current connection
             total_req_excluded += 1
-
-        progress_bar_all.set_postfix({'Processing': urn_id})  # Update progress bar
 
     progress_bar_all.close()
 
