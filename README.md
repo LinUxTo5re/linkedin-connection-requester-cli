@@ -1,4 +1,4 @@
-# LinkedIn Connection Requester CLI
+# LinkedIn Connection Requester CLI (send bulk requests)
 
 ## Overview
 
